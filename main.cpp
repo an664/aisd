@@ -73,8 +73,8 @@ std::complex<double> GetNumber(const std::string& prompt) {
 template<typename T>
 void PrintMatrix(const Matrix<T>& m, const std::string& name) {
     std::cout << "\nMatrix " << name << ":\n";
-    for (std::size_t i = 0; i < 2; ++i) {
-        for (std::size_t j = 0; j < 2; ++j) {
+    for (std::size_t i = 0; i < m.GetRows(); ++i) {
+        for (std::size_t j = 0; j < m.GetCols(); ++j) {
             std::cout << m(i, j) << " ";
         }
         std::cout << "\n";

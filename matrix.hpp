@@ -133,6 +133,9 @@ public:
     // Friend function for commutative scalar multiplication
     template<typename U>
     friend Matrix<U> operator*(const U& scalar, const Matrix<U>& matrix);
+    
+    std::size_t GetRows() const { return rows; }
+    std::size_t GetCols() const { return cols; }
 };
 
 // Commutative scalar multiplication
