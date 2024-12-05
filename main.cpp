@@ -163,7 +163,7 @@ void RealMatrixOperations() {
     // Scalar multiplication
     double scalar = 2.0;
     auto scaledM1 = m1 * scalar;
-    auto scaledM2 = scalar * m2; // проверка коммутативности
+    auto scaledM2 = scalar * m2; // Commutability check
     PrintMatrix(scaledM1, "M1 * 2.0");
     PrintMatrix(scaledM2, "2.0 * M2");
 
@@ -256,7 +256,7 @@ void ComplexMatrixOperations() {
     // Scalar multiplication
     std::complex<double> scalar(2.0, 1.0);
     auto scaledM1 = m1 * scalar;
-    auto scaledM2 = scalar * m2; // проверка коммутативности
+    auto scaledM2 = scalar * m2; // Commutability check
     PrintMatrix(scaledM1, "M1 * (2+i)");
     PrintMatrix(scaledM2, "(2+i) * M2");
 
@@ -269,7 +269,7 @@ void ComplexMatrixOperations() {
     std::cout << "Trace of M2: " << m2.Trace() << std::endl;
 }
 
-// Специализация PrintVector для комплексных чисел
+// Specialization PrintVector for complex numbers
 template<>
 void PrintVector(const std::vector<std::complex<double>>& vec, const std::string& vectorName) {
     std::cout << vectorName << " = (";
