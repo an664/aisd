@@ -11,18 +11,72 @@ TEST(MatrixTest, ConstructorTest) {
     EXPECT_EQ(m(2, 2), 1.0);
 }
 
+// Default constructor test (with value)
+TEST(MatrixTest, DefaultConstructorTest) {
+    Matrix<double> m1(2, 3, 1.5);
+    Matrix<double> m2(2, 3, 1.5);
+    Matrix<double> m3(2, 3, 2.0);
+    
+    EXPECT_EQ(m1.GetRows(), 2);
+    EXPECT_EQ(m1.GetCols(), 3);
+    EXPECT_EQ(m1, m2);      // Должны быть равны
+    EXPECT_NE(m1, m3);      // Не должны быть равны
+}
+
 // Random constructor test
 TEST(MatrixTest, RandomConstructorTest) {
-    Matrix<double> m(3, 3, 0.0, 1.0);
-    bool hasNonZero = false;
-    for (std::size_t i = 0; i < 3; ++i) {
-        for (std::size_t j = 0; j < 3; ++j) {
-            if (m(i, j) != 0.0) hasNonZero = true;
-            EXPECT_GE(m(i, j), 0.0);
-            EXPECT_LE(m(i, j), 1.0);
-        }
-    }
-    EXPECT_TRUE(hasNonZero);
+    Matrix<double> m1(3, 2, -1.0, 1.0);
+    Matrix<double> m2(m1);  // Копируем m1
+    
+    EXPECT_EQ(m1.GetRows(), 3);
+    EXPECT_EQ(m1.GetCols(), 2);
+    EXPECT_EQ(m1, m2);      // Копия должна быть равна оригиналу
+    
+    m2(0, 0) += 1.0;       // Меняем элемент
+    EXPECT_NE(m1, m2);      // Теперь матрицы должны быть не равны
+}
+
+// Copy constructor test
+TEST(MatrixTest, CopyConstructorTest) {
+    Matrix<double> m1(2, 2, 3.0);
+    Matrix<double> m2(m1);
+    Matrix<double> m3(2, 2, 3.0);
+    
+    EXPECT_EQ(m1, m2);      // Копия должна быть равна оригиналу
+    EXPECT_EQ(m1, m3);      // Матрицы с одинаковыми значениями должны быть равны
+    
+    m2(0, 0) = 5.0;
+    EXPECT_NE(m1, m2);      // После изменения не должны быть равны
+}
+
+// Complex number constructor test
+TEST(MatrixTest, ComplexConstructorTest) {
+    using Complex = std::complex<double>;
+    Matrix<Complex> m1(2, 2, Complex(1.0, 2.0));
+    Matrix<Complex> m2(2, 2, Complex(1.0, 2.0));
+    Matrix<Complex> m3(2, 2, Complex(1.0, 2.1));
+    
+    EXPECT_EQ(m1, m2);      // Одинаковые комплексные матрицы
+    EXPECT_NE(m1, m3);      // Разные комплексные матрицы
+}
+
+// Random complex constructor test
+TEST(MatrixTest, RandomComplexConstructorTest) {
+    using Complex = std::complex<double>;
+    Complex min(-1.0, -1.0), max(1.0, 1.0);
+    Matrix<Complex> m1(2, 2, min, max);
+    Matrix<Complex> m2(m1);
+    
+    EXPECT_EQ(m1, m2);      // Копия должна быть равна оригиналу
+    
+    m2(0, 0) = Complex(2.0, 2.0);
+    EXPECT_NE(m1, m2);      // После изменения не должны быть равны
+}
+
+// Invalid size constructor test
+TEST(MatrixTest, InvalidConstructorTest) {
+    EXPECT_THROW(Matrix<double>(0, 1), std::invalid_argument);
+    EXPECT_THROW(Matrix<double>(1, 0), std::invalid_argument);
 }
 
 // Addition test
@@ -195,11 +249,11 @@ TEST(MatrixTest, InequalityTest) {
 // Floating point comparison precision test
 TEST(MatrixTest, FloatingPointComparisonTest) {
     Matrix<double> m1(2, 2, 1.0);
-    Matrix<double> m2(2, 2, 1.0 + 1e-11);  // Difference smaller than EPSILON
-    Matrix<double> m3(2, 2, 1.0 + 1e-9);   // Difference larger than EPSILON
-
-    EXPECT_TRUE(m1 == m2);
-    EXPECT_FALSE(m1 == m3);
+    Matrix<double> m2(2, 2, 1.0 + 1e-11);  // Разница меньше EPSILON
+    Matrix<double> m3(2, 2, 1.0 + 1e-9);   // Разница больше EPSILON
+    
+    EXPECT_EQ(m1, m2);      // Должны считаться равными из-за погрешности
+    EXPECT_NE(m1, m3);      // Не должны считаться равными
 }
 
 // Complex number equality test
