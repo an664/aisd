@@ -45,6 +45,10 @@ private:
 public:
     Matrix(std::size_t rows_, std::size_t cols_, T value = T()) 
         : rows(rows_), cols(cols_) {
+        if (rows == 0 || cols == 0) {
+            throw std::invalid_argument("Matrix dimensions cannot be zero");
+        }
+        
         AllocateMemory();
         for (std::size_t i = 0; i < rows; ++i) {
             for (std::size_t j = 0; j < cols; ++j) {
@@ -78,6 +82,10 @@ public:
 
     Matrix(std::size_t rows_, std::size_t cols_, T min, T max) 
         : rows(rows_), cols(cols_) {
+        if (rows == 0 || cols == 0) {
+            throw std::invalid_argument("Matrix dimensions cannot be zero");
+        }
+        
         AllocateMemory();
         std::random_device rd;
         std::mt19937 gen(rd());
