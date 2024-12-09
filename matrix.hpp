@@ -53,8 +53,7 @@ public:
         }
     }
 
-    Matrix(const Matrix& other) 
-        : rows(other.rows), cols(other.cols) {
+    Matrix(const Matrix& other) : rows(other.rows), cols(other.cols) {
         AllocateMemory();
         for (std::size_t i = 0; i < rows; ++i) {
             for (std::size_t j = 0; j < cols; ++j) {
@@ -65,15 +64,10 @@ public:
 
     Matrix& operator=(const Matrix& other) {
         if (this != &other) {
-            FreeMemory();
-            rows = other.rows;
-            cols = other.cols;
-            AllocateMemory();
-            for (std::size_t i = 0; i < rows; ++i) {
-                for (std::size_t j = 0; j < cols; ++j) {
-                    data[i][j] = other.data[i][j];
-                }
-            }
+            Matrix temp(other);
+            std::swap(rows, temp.rows);
+            std::swap(cols, temp.cols);
+            std::swap(data, temp.data);
         }
         return *this;
     }
