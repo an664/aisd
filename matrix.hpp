@@ -164,7 +164,7 @@ public:
         return result;
     }
     
-    T Trace() const {
+    T trace() const {
         if (rows != cols)
             throw std::invalid_argument("Trace is defined only for square matrices.");
         T trace = T();

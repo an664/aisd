@@ -113,8 +113,8 @@ void RealMatrixOperations() {
     std::cout << scalar << " * M2:\n" << (scalar * m2) << "\n";
     std::cout << "\nM1 / " << scalar << ":\n" << (m1 / scalar) << "\n";
     
-    std::cout << "\nTrace of M1: " << m1.Trace() << "\n";
-    std::cout << "Trace of M2: " << m2.Trace() << "\n";
+    std::cout << "\nTrace of M1: " << m1.trace() << "\n";
+    std::cout << "Trace of M2: " << m2.trace() << "\n";
 }
 
 void CheckVectorCoplanarity() {
@@ -204,8 +204,8 @@ void ComplexMatrixOperations() {
     std::cout << scalar << " * M2:\n" << (scalar * m2) << "\n";
     std::cout << "\nM1 / " << scalar << ":\n" << (m1 / scalar) << "\n";
     
-    std::cout << "\nTrace of M1: " << m1.Trace() << "\n";
-    std::cout << "Trace of M2: " << m2.Trace() << "\n";
+    std::cout << "\nTrace of M1: " << m1.trace() << "\n";
+    std::cout << "Trace of M2: " << m2.trace() << "\n";
 }
 
 void CheckComplexVectorCoplanarity() {
@@ -286,7 +286,7 @@ void TestMatrixOperations() {
     Matrix<double> square(3, 3, 2.0);
     std::cout << "\nTesting trace:\n";
     std::cout << "Matrix:\n" << square << "\n";
-    std::cout << "Trace: " << square.Trace() << "\n";
+    std::cout << "Trace: " << square.trace() << "\n";
 
     // Test determinant
     std::cout << "\nTesting determinant (3x3):\n";

@@ -137,7 +137,7 @@ TEST(MatrixTest, ScalarDivisionTest) {
 // Trace test
 TEST(MatrixTest, TraceTest) {
     Matrix<double> m(3, 3, 2.0);
-    EXPECT_EQ(m.Trace(), 6.0);
+    EXPECT_EQ(m.trace(), 6.0);
 }
 
 // Complex number tests
@@ -154,7 +154,7 @@ TEST(MatrixTest, ComplexTest) {
     EXPECT_EQ(result(0, 0), Complex(0.0, 4.0));
     
     // Test trace
-    EXPECT_EQ(m.Trace(), Complex(2.0, 2.0));
+    EXPECT_EQ(m.trace(), Complex(2.0, 2.0));
 }
 
 // Coplanarity tests
