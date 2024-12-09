@@ -1,5 +1,4 @@
-#ifndef MATRIX_HPP
-#define MATRIX_HPP
+#pragma once
 
 #include <stdexcept>
 #include <random>
@@ -229,5 +228,3 @@ template<typename T>
 Matrix<T> operator*(const T& scalar, const Matrix<T>& matrix) {
     return matrix * scalar;
 }
-
-#endif // MATRIX_HPP
