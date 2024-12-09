@@ -184,9 +184,6 @@ public:
                data[0][2] * (data[1][0] * data[2][1] - data[1][1] * data[2][0]);
     }
     
-    template<typename U>
-    friend Matrix<U> operator*(const U& scalar, const Matrix<U>& matrix);
-    
     std::size_t GetRows() const { return rows; }
     std::size_t GetCols() const { return cols; }
 

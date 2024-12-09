@@ -304,4 +304,25 @@ TEST(MatrixTest, EdgeCasesEqualityTest) {
 
     EXPECT_TRUE(m1 == m2);
     EXPECT_TRUE(m1 == m3);
+}
+
+// Test scalar multiplication commutativity
+TEST(MatrixTest, ScalarMultiplicationCommutativityTest) {
+    Matrix<double> m1(2, 2, 1.0);
+    double scalar = 2.5;
+    
+    Matrix<double> result1 = m1 * scalar;
+    Matrix<double> result2 = scalar * m1;
+    
+    EXPECT_EQ(result1, result2);
+    
+    // Проверяем для комплексных чисел
+    using Complex = std::complex<double>;
+    Matrix<Complex> m2(2, 2, Complex(1.0, 1.0));
+    Complex complex_scalar(2.0, 1.0);
+    
+    Matrix<Complex> result3 = m2 * complex_scalar;
+    Matrix<Complex> result4 = complex_scalar * m2;
+    
+    EXPECT_EQ(result3, result4);
 } 
