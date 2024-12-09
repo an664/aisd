@@ -25,6 +25,21 @@ T GetNumber(const std::string& prompt) {
     }
 }
 
+// GetNumber for complex numbers
+template<>
+std::complex<double> GetNumber(const std::string& prompt) {
+    double real, imag;
+    while (true) {
+        std::cout << prompt << " (real imag): ";
+        if (std::cin >> real >> imag) {
+            ClearInputBuffer();
+            return std::complex<double>(real, imag);
+        }
+        std::cout << "Input error. Please enter two numbers for real and imaginary parts.\n";
+        ClearInputBuffer();
+    }
+}
+
 template<typename T>
 bool AreVectorsCoplanar(const Matrix<T>& a, const Matrix<T>& b, const Matrix<T>& c) {
     // Check if vectors are 3x1
@@ -46,33 +61,7 @@ bool AreVectorsCoplanar(const Matrix<T>& a, const Matrix<T>& b, const Matrix<T>&
     
     // Vectors are coplanar if determinant is zero
     const double epsilon = 1e-10;
-    return std::abs(std::abs(m.determinant())) < epsilon;
-}
-
-// GetNumber for complex numbers
-template<>
-std::complex<double> GetNumber(const std::string& prompt) {
-    double real, imag;
-    while (true) {
-        std::cout << prompt << " (real imag): ";
-        if (std::cin >> real >> imag) {
-            ClearInputBuffer();
-            return std::complex<double>(real, imag);
-        }
-        std::cout << "Input error. Please enter two numbers for real and imaginary parts.\n";
-        ClearInputBuffer();
-    }
-}
-
-template<typename T>
-void PrintMatrix(const Matrix<T>& m, const std::string& name) {
-    std::cout << "\nMatrix " << name << ":\n";
-    for (std::size_t i = 0; i < m.GetRows(); ++i) {
-        for (std::size_t j = 0; j < m.GetCols(); ++j) {
-            std::cout << m(i, j) << " ";
-        }
-        std::cout << "\n";
-    }
+    return std::abs(m.determinant()) < epsilon;
 }
 
 void ShowInputChoiceMenu() {
@@ -80,15 +69,6 @@ void ShowInputChoiceMenu() {
     std::cout << "1. Manual input\n";
     std::cout << "2. Random values\n";
     std::cout << "Your choice: ";
-}
-
-template<typename T>
-Matrix<T> GetRandomMatrix(std::size_t rows, std::size_t cols) {
-    if constexpr (std::is_same_v<T, std::complex<double>>) {
-        return Matrix<T>(rows, cols, std::complex<double>(-10.0, -10.0), std::complex<double>(10.0, 10.0));
-    } else {
-        return Matrix<T>(rows, cols, -10.0, 10.0);
-    }
 }
 
 void RealMatrixOperations() {
