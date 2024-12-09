@@ -1,7 +1,6 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
-#include <vector>
 #include <stdexcept>
 #include <random>
 #include <complex>
