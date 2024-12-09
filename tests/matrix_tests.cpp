@@ -168,4 +168,87 @@ TEST(MatrixTest, DeterminantTest) {
     m(2, 0) = 0.0; m(2, 1) = 0.0; m(2, 2) = 1.0;
     
     EXPECT_DOUBLE_EQ(m.determinant(), 1.0);
+}
+
+// Equality operator test
+TEST(MatrixTest, EqualityTest) {
+    Matrix<double> m1(2, 2, 1.0);
+    Matrix<double> m2(2, 2, 1.0);
+    Matrix<double> m3(2, 2, 1.1);
+    Matrix<double> m4(3, 3, 1.0);
+
+    EXPECT_TRUE(m1 == m2);
+    EXPECT_FALSE(m1 == m3);
+    EXPECT_FALSE(m1 == m4);
+}
+
+// Inequality operator test
+TEST(MatrixTest, InequalityTest) {
+    Matrix<double> m1(2, 2, 1.0);
+    Matrix<double> m2(2, 2, 1.0);
+    Matrix<double> m3(2, 2, 1.1);
+
+    EXPECT_FALSE(m1 != m2);
+    EXPECT_TRUE(m1 != m3);
+}
+
+// Floating point comparison precision test
+TEST(MatrixTest, FloatingPointComparisonTest) {
+    Matrix<double> m1(2, 2, 1.0);
+    Matrix<double> m2(2, 2, 1.0 + 1e-11);  // Difference smaller than EPSILON
+    Matrix<double> m3(2, 2, 1.0 + 1e-9);   // Difference larger than EPSILON
+
+    EXPECT_TRUE(m1 == m2);
+    EXPECT_FALSE(m1 == m3);
+}
+
+// Complex number equality test
+TEST(MatrixTest, ComplexEqualityTest) {
+    using Complex = std::complex<double>;
+    Matrix<Complex> m1(2, 2, Complex(1.0, 1.0));
+    Matrix<Complex> m2(2, 2, Complex(1.0, 1.0));
+    Matrix<Complex> m3(2, 2, Complex(1.0, 1.1));
+
+    EXPECT_TRUE(m1 == m2);
+    EXPECT_FALSE(m1 == m3);
+}
+
+// Stream output operator test
+TEST(MatrixTest, StreamOutputTest) {
+    Matrix<double> m(2, 2, 1.5);
+    std::stringstream ss;
+    ss << m;
+    std::string expected = "1.5 1.5\n1.5 1.5";
+    EXPECT_EQ(ss.str(), expected);
+}
+
+// Complex stream output test
+TEST(MatrixTest, ComplexStreamOutputTest) {
+    using Complex = std::complex<double>;
+    Matrix<Complex> m(2, 2, Complex(1.0, 2.0));
+    std::stringstream ss;
+    ss << m;
+    // Note: exact format might need adjustment based on complex number output format
+    EXPECT_FALSE(ss.str().empty());
+}
+
+// Different size matrices equality test
+TEST(MatrixTest, DifferentSizeEqualityTest) {
+    Matrix<double> m1(2, 2, 1.0);
+    Matrix<double> m2(2, 3, 1.0);
+    Matrix<double> m3(3, 2, 1.0);
+
+    EXPECT_FALSE(m1 == m2);
+    EXPECT_FALSE(m1 == m3);
+    EXPECT_FALSE(m2 == m3);
+}
+
+// Edge cases for equality test
+TEST(MatrixTest, EdgeCasesEqualityTest) {
+    Matrix<double> m1(1, 1, 0.0);
+    Matrix<double> m2(1, 1, -0.0);
+    Matrix<double> m3(1, 1, 1e-11);
+
+    EXPECT_TRUE(m1 == m2);
+    EXPECT_TRUE(m1 == m3);
 } 

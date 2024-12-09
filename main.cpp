@@ -1,16 +1,14 @@
 #include <iostream>
 #include <cmath>
-#include <limits>
-#include <complex>
 #include "matrix.hpp"
 
-// Clear input buffer
+// Clear input buffer function
 void ClearInputBuffer() {
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// Safe number input
+// Get number from user with validation
 template<typename T>
 T GetNumber(const std::string& prompt) {
     T value;
@@ -25,51 +23,7 @@ T GetNumber(const std::string& prompt) {
     }
 }
 
-// Vector input
-template<typename T>
-std::vector<T> InputVector(const std::string& vectorName) {
-    std::vector<T> vec(3);
-    std::cout << "\nEnter vector " << vectorName << ":\n";
-    vec[0] = GetNumber<T>("x = ");
-    vec[1] = GetNumber<T>("y = ");
-    vec[2] = GetNumber<T>("z = ");
-    return vec;
-}
-
-template<typename T>
-void PrintVector(const std::vector<T>& vec, const std::string& vectorName) {
-    std::cout << vectorName << " = (" << vec[0] << ", " << vec[1] << ", " << vec[2] << ")\n";
-}
-
-template<typename T>
-bool AreVectorsCoplanar(const std::vector<T>& a, const std::vector<T>& b, const std::vector<T>& c) {
-    Matrix<T> m(3, 3);
-    
-    for (std::size_t i = 0; i < 3; ++i) {
-        m(i, 0) = a[i];
-        m(i, 1) = b[i];
-        m(i, 2) = c[i];
-    }
-    
-    const double epsilon = 1e-10;
-    return std::abs(std::abs(m.determinant())) < epsilon;
-}
-
-// Специализация GetNumber для комплексных чисел
-template<>
-std::complex<double> GetNumber(const std::string& prompt) {
-    double real, imag;
-    while (true) {
-        std::cout << prompt << " (real imag): ";
-        if (std::cin >> real >> imag) {
-            ClearInputBuffer();
-            return std::complex<double>(real, imag);
-        }
-        std::cout << "Input error. Please enter two numbers for real and imaginary parts.\n";
-        ClearInputBuffer();
-    }
-}
-
+// Print matrix function
 template<typename T>
 void PrintMatrix(const Matrix<T>& m, const std::string& name) {
     std::cout << "\nMatrix " << name << ":\n";
@@ -81,248 +35,106 @@ void PrintMatrix(const Matrix<T>& m, const std::string& name) {
     }
 }
 
-void ShowInputChoiceMenu() {
-    std::cout << "\nChoose input method:\n";
-    std::cout << "1. Manual input\n";
-    std::cout << "2. Random values\n";
-    std::cout << "Your choice: ";
-}
-
-template<typename T>
-Matrix<T> GetRandomMatrix(std::size_t rows, std::size_t cols) {
-    if constexpr (std::is_same_v<T, std::complex<double>>) {
-        return Matrix<T>(rows, cols, std::complex<double>(-10.0, -10.0), std::complex<double>(10.0, 10.0));
-    } else {
-        return Matrix<T>(rows, cols, -10.0, 10.0);
-    }
-}
-
-template<typename T>
-std::vector<T> GetRandomVector() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> dis(-10.0, 10.0);
+// Check if three vectors are coplanar
+bool AreVectorsCoplanar(const Matrix<double>& a, const Matrix<double>& b, const Matrix<double>& c) {
+    // Create matrix 3x3 from vectors
+    Matrix<double> vectors(3, 3);
     
-    std::vector<T> vec(3);
-    if constexpr (std::is_same_v<T, std::complex<double>>) {
-        for (std::size_t i = 0; i < 3; ++i) {
-            vec[i] = std::complex<double>(dis(gen), dis(gen));
-        }
-    } else {
-        for (std::size_t i = 0; i < 3; ++i) {
-            vec[i] = dis(gen);
-        }
+    // Fill matrix with vectors as columns
+    for (std::size_t i = 0; i < 3; ++i) {
+        vectors(i, 0) = a(i, 0);
+        vectors(i, 1) = b(i, 0);
+        vectors(i, 2) = c(i, 0);
     }
-    return vec;
-}
-
-void RealMatrixOperations() {
-    ShowInputChoiceMenu();
-    char inputChoice;
-    std::cin >> inputChoice;
-    ClearInputBuffer();
-
-    Matrix<double> m1(2, 2), m2(2, 2);
     
-    if (inputChoice == '1') {
-        // Manual input
-        std::cout << "\nEnter first matrix elements:\n";
-        for (std::size_t i = 0; i < 2; ++i) {
-            for (std::size_t j = 0; j < 2; ++j) {
-                m1(i, j) = GetNumber<double>("Enter element [" + std::to_string(i) + "][" + std::to_string(j) + "]: ");
-            }
-        }
-        std::cout << "\nEnter second matrix elements:\n";
-        for (std::size_t i = 0; i < 2; ++i) {
-            for (std::size_t j = 0; j < 2; ++j) {
-                m2(i, j) = GetNumber<double>("Enter element [" + std::to_string(i) + "][" + std::to_string(j) + "]: ");
-            }
-        }
-    } else {
-        // Random values
-        m1 = GetRandomMatrix<double>(2, 2);
-        m2 = GetRandomMatrix<double>(2, 2);
-    }
-
-    // Display matrices
-    PrintMatrix(m1, "M1");
-    PrintMatrix(m2, "M2");
-
-    // Addition
-    auto sum = m1 + m2;
-    PrintMatrix(sum, "M1 + M2");
-
-    // Subtraction
-    auto diff = m1 - m2;
-    PrintMatrix(diff, "M1 - M2");
-
-    // Matrix multiplication
-    auto prod = m1 * m2;
-    PrintMatrix(prod, "M1 * M2");
-
-    // Scalar multiplication
-    double scalar = 2.0;
-    auto scaledM1 = m1 * scalar;
-    auto scaledM2 = scalar * m2; // Commutability check
-    PrintMatrix(scaledM1, "M1 * 2.0");
-    PrintMatrix(scaledM2, "2.0 * M2");
-
-    // Division by scalar
-    auto dividedM1 = m1 / scalar;
-    PrintMatrix(dividedM1, "M1 / 2.0");
-
-    // Trace
-    std::cout << "Trace of M1: " << m1.Trace() << std::endl;
-    std::cout << "Trace of M2: " << m2.Trace() << std::endl;
+    // Vectors are coplanar if determinant is zero
+    return std::abs(vectors.determinant()) < 1e-10;
 }
 
-template<typename T>
-void CheckVectorCoplanarity() {
-    ShowInputChoiceMenu();
-    char inputChoice;
-    std::cin >> inputChoice;
-    ClearInputBuffer();
+// Test matrix operations
+void TestMatrixOperations() {
+    std::cout << "\n=== Testing Matrix Operations ===\n";
 
-    std::vector<T> a, b, c;
+    // Test matrix creation and equality
+    Matrix<double> m1(2, 2, 1.0);
+    Matrix<double> m2(2, 2, 1.0);
+    Matrix<double> m3(2, 2, 2.0);
+
+    std::cout << "\nTesting equality operator:\n";
+    std::cout << "m1 == m2 (should be true): " << (m1 == m2) << "\n";
+    std::cout << "m1 == m3 (should be false): " << (m1 == m3) << "\n";
+
+    // Test matrix arithmetic
+    std::cout << "\nTesting arithmetic operations:\n";
+    std::cout << "Matrix m1:\n" << m1 << "\n";
+    std::cout << "Matrix m3:\n" << m3 << "\n";
     
-    if (inputChoice == '1') {
-        // Manual input
-        a = InputVector<T>("a");
-        b = InputVector<T>("b");
-        c = InputVector<T>("c");
-    } else {
-        // Random values
-        a = GetRandomVector<T>();
-        b = GetRandomVector<T>();
-        c = GetRandomVector<T>();
-    }
+    std::cout << "m1 + m3:\n" << (m1 + m3) << "\n";
+    std::cout << "m3 - m1:\n" << (m3 - m1) << "\n";
+    std::cout << "m1 * 2:\n" << (m1 * 2.0) << "\n";
 
-    std::cout << "\nVectors:\n";
-    PrintVector(a, "a");
-    PrintVector(b, "b");
-    PrintVector(c, "c");
+    // Test matrix multiplication
+    Matrix<double> m4(2, 3, 1.0);
+    Matrix<double> m5(3, 2, 2.0);
+    std::cout << "\nTesting matrix multiplication:\n";
+    std::cout << "Matrix m4 (2x3):\n" << m4 << "\n";
+    std::cout << "Matrix m5 (3x2):\n" << m5 << "\n";
+    std::cout << "m4 * m5:\n" << (m4 * m5) << "\n";
 
-    if (AreVectorsCoplanar(a, b, c)) {
-        std::cout << "\nVectors are COPLANAR\n";
-    } else {
-        std::cout << "\nVectors are NOT coplanar\n";
-    }
-}
+    // Test trace
+    Matrix<double> square(3, 3, 2.0);
+    std::cout << "\nTesting trace:\n";
+    std::cout << "Matrix:\n" << square << "\n";
+    std::cout << "Trace: " << square.Trace() << "\n";
 
-void ComplexMatrixOperations() {
-    ShowInputChoiceMenu();
-    char inputChoice;
-    std::cin >> inputChoice;
-    ClearInputBuffer();
-
-    Matrix<std::complex<double>> m1(2, 2), m2(2, 2);
-    
-    if (inputChoice == '1') {
-        // Manual input
-        std::cout << "\nEnter first matrix elements:\n";
-        for (std::size_t i = 0; i < 2; ++i) {
-            for (std::size_t j = 0; j < 2; ++j) {
-                m1(i, j) = GetNumber<std::complex<double>>("Enter element [" + std::to_string(i) + "][" + std::to_string(j) + "]");
-            }
-        }
-        std::cout << "\nEnter second matrix elements:\n";
-        for (std::size_t i = 0; i < 2; ++i) {
-            for (std::size_t j = 0; j < 2; ++j) {
-                m2(i, j) = GetNumber<std::complex<double>>("Enter element [" + std::to_string(i) + "][" + std::to_string(j) + "]");
-            }
-        }
-    } else {
-        // Random values
-        m1 = GetRandomMatrix<std::complex<double>>(2, 2);
-        m2 = GetRandomMatrix<std::complex<double>>(2, 2);
-    }
-
-    // Display matrices
-    PrintMatrix(m1, "M1");
-    PrintMatrix(m2, "M2");
-
-    // Addition
-    auto sum = m1 + m2;
-    PrintMatrix(sum, "M1 + M2");
-
-    // Subtraction
-    auto diff = m1 - m2;
-    PrintMatrix(diff, "M1 - M2");
-
-    // Matrix multiplication
-    auto prod = m1 * m2;
-    PrintMatrix(prod, "M1 * M2");
-
-    // Scalar multiplication
-    std::complex<double> scalar(2.0, 1.0);
-    auto scaledM1 = m1 * scalar;
-    auto scaledM2 = scalar * m2; // Commutability check
-    PrintMatrix(scaledM1, "M1 * (2+i)");
-    PrintMatrix(scaledM2, "(2+i) * M2");
-
-    // Division by scalar
-    auto dividedM1 = m1 / scalar;
-    PrintMatrix(dividedM1, "M1 / (2+i)");
-
-    // Trace
-    std::cout << "Trace of M1: " << m1.Trace() << std::endl;
-    std::cout << "Trace of M2: " << m2.Trace() << std::endl;
-}
-
-// Specialization PrintVector for complex numbers
-template<>
-void PrintVector(const std::vector<std::complex<double>>& vec, const std::string& vectorName) {
-    std::cout << vectorName << " = (";
-    for (std::size_t i = 0; i < vec.size(); ++i) {
-        std::cout << vec[i];
-        if (i < vec.size() - 1) {
-            std::cout << ", ";
-        }
-    }
-    std::cout << ")\n";
+    // Test determinant
+    std::cout << "\nTesting determinant (3x3):\n";
+    std::cout << "Determinant: " << square.determinant() << "\n";
 }
 
 int main() {
-    std::cout << "Matrix Operations and Coplanarity Check\n";
-    std::cout << "=======================================\n";
-
-    char choice;
-    do {
-        std::cout << "\nChoose operation type:\n";
-        std::cout << "1. Real number operations\n";
-        std::cout << "2. Complex number operations\n";
-        std::cout << "3. Vector coplanarity check (real numbers)\n";
-        std::cout << "4. Vector coplanarity check (complex numbers)\n";
-        std::cout << "5. Exit\n";
-        std::cout << "Your choice: ";
+    try {
+        // Run tests first
+        TestMatrixOperations();
         
-        std::cin >> choice;
-        ClearInputBuffer();
+        std::cout << "\n=== Coplanar Vectors Check ===\n";
+        // Create three 3x1 vectors
+        Matrix<double> a(3, 1);
+        Matrix<double> b(3, 1);
+        Matrix<double> c(3, 1);
 
-        switch (choice) {
-            case '1': {
-                RealMatrixOperations();
-                break;
-            }
-            case '2': {
-                ComplexMatrixOperations();
-                break;
-            }
-            case '3': {
-                CheckVectorCoplanarity<double>();
-                break;
-            }
-            case '4': {
-                CheckVectorCoplanarity<std::complex<double>>();
-                break;
-            }
-            case '5':
-                std::cout << "\nThank you for using the program!\n";
-                break;
-            default:
-                std::cout << "\nInvalid choice. Please try again.\n";
+        // Input vectors
+        std::cout << "Enter vector a (3 components):\n";
+        for (std::size_t i = 0; i < 3; ++i) {
+            a(i, 0) = GetNumber<double>("a" + std::to_string(i + 1) + ": ");
         }
-    } while (choice != '5');
+
+        std::cout << "Enter vector b (3 components):\n";
+        for (std::size_t i = 0; i < 3; ++i) {
+            b(i, 0) = GetNumber<double>("b" + std::to_string(i + 1) + ": ");
+        }
+
+        std::cout << "Enter vector c (3 components):\n";
+        for (std::size_t i = 0; i < 3; ++i) {
+            c(i, 0) = GetNumber<double>("c" + std::to_string(i + 1) + ": ");
+        }
+
+        // Print vectors
+        PrintMatrix(a, "a");
+        PrintMatrix(b, "b");
+        PrintMatrix(c, "c");
+
+        // Check if vectors are coplanar
+        if (AreVectorsCoplanar(a, b, c)) {
+            std::cout << "\nVectors are coplanar.\n";
+        } else {
+            std::cout << "\nVectors are not coplanar.\n";
+        }
+
+    } catch (const std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+        return 1;
+    }
 
     return 0;
 }

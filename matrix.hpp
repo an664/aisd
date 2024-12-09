@@ -5,26 +5,87 @@
 #include <stdexcept>
 #include <random>
 #include <complex>
+#include <iostream>
 
 template<typename T>
 class Matrix {
 private:
     std::size_t rows;
     std::size_t cols;
-    std::vector<std::vector<T>> data;
+    T** data;
+
+    // Static constant for floating-point comparison
+    static constexpr double EPSILON = 1e-10;
+    
+    // Helper method for comparing values with precision
+    static bool AreEqual(const T& a, const T& b) {
+        if constexpr (std::is_same_v<T, std::complex<double>>) {
+            return std::abs(a.real() - b.real()) < EPSILON && 
+                   std::abs(a.imag() - b.imag()) < EPSILON;
+        } else {
+            return std::abs(a - b) < EPSILON;
+        }
+    }
+
+    void AllocateMemory() {
+        data = new T*[rows];
+        for (std::size_t i = 0; i < rows; ++i) {
+            data[i] = new T[cols];
+        }
+    }
+
+    void FreeMemory() {
+        if (data) {
+            for (std::size_t i = 0; i < rows; ++i) {
+                delete[] data[i];
+            }
+            delete[] data;
+        }
+    }
 
 public:
-    // Constructor with value initialization
-    Matrix(std::size_t rows, std::size_t cols, T value = T()) 
-        : rows(rows)
-        , cols(cols)
-        , data(rows, std::vector<T>(cols, value)) {}
-    
-    // Constructor with random values
+    Matrix(std::size_t rows_, std::size_t cols_, T value = T()) 
+        : rows(rows_), cols(cols_) {
+        AllocateMemory();
+        for (std::size_t i = 0; i < rows; ++i) {
+            for (std::size_t j = 0; j < cols; ++j) {
+                data[i][j] = value;
+            }
+        }
+    }
+
+    Matrix(const Matrix& other) 
+        : rows(other.rows), cols(other.cols) {
+        AllocateMemory();
+        for (std::size_t i = 0; i < rows; ++i) {
+            for (std::size_t j = 0; j < cols; ++j) {
+                data[i][j] = other.data[i][j];
+            }
+        }
+    }
+
+    Matrix& operator=(const Matrix& other) {
+        if (this != &other) {
+            FreeMemory();
+            rows = other.rows;
+            cols = other.cols;
+            AllocateMemory();
+            for (std::size_t i = 0; i < rows; ++i) {
+                for (std::size_t j = 0; j < cols; ++j) {
+                    data[i][j] = other.data[i][j];
+                }
+            }
+        }
+        return *this;
+    }
+
+    ~Matrix() {
+        FreeMemory();
+    }
+
     Matrix(std::size_t rows_, std::size_t cols_, T min, T max) 
-        : rows(rows_)
-        , cols(cols_)
-        , data(rows_, std::vector<T>(cols_)) {
+        : rows(rows_), cols(cols_) {
+        AllocateMemory();
         std::random_device rd;
         std::mt19937 gen(rd());
         
@@ -48,7 +109,6 @@ public:
         }
     }
     
-    // Element access operator
     T& operator()(std::size_t i, std::size_t j) {
         return data[i][j];
     }
@@ -57,7 +117,6 @@ public:
         return data[i][j];
     }
     
-    // Addition operator
     Matrix operator+(const Matrix& other) const {
         if (rows != other.rows || cols != other.cols)
             throw std::invalid_argument("Matrix dimensions must match for addition.");
@@ -68,7 +127,6 @@ public:
         return result;
     }
     
-    // Subtraction operator
     Matrix operator-(const Matrix& other) const {
         if (rows != other.rows || cols != other.cols)
             throw std::invalid_argument("Matrix dimensions must match for subtraction.");
@@ -79,7 +137,6 @@ public:
         return result;
     }
     
-    // Multiplication operator
     Matrix operator*(const Matrix& other) const {
         if (cols != other.rows)
             throw std::invalid_argument("Matrix dimensions must match for multiplication.");
@@ -91,7 +148,6 @@ public:
         return result;
     }
     
-    // Scalar multiplication
     Matrix operator*(const T& scalar) const {
         Matrix result(rows, cols);
         for (std::size_t i = 0; i < rows; ++i)
@@ -100,7 +156,6 @@ public:
         return result;
     }
     
-    // Scalar division
     Matrix operator/(const T& scalar) const {
         Matrix result(rows, cols);
         for (std::size_t i = 0; i < rows; ++i)
@@ -109,7 +164,6 @@ public:
         return result;
     }
     
-    // Trace calculation
     T Trace() const {
         if (rows != cols)
             throw std::invalid_argument("Trace is defined only for square matrices.");
@@ -119,7 +173,6 @@ public:
         return trace;
     }
     
-    // Calculate determinant for 3x3 matrix
     T determinant() const {
         if (rows != 3 || cols != 3) {
             throw std::invalid_argument("Determinant calculation supported only for 3x3 matrices");
@@ -130,15 +183,50 @@ public:
                data[0][2] * (data[1][0] * data[2][1] - data[1][1] * data[2][0]);
     }
     
-    // Friend function for commutative scalar multiplication
     template<typename U>
     friend Matrix<U> operator*(const U& scalar, const Matrix<U>& matrix);
     
     std::size_t GetRows() const { return rows; }
     std::size_t GetCols() const { return cols; }
+
+    // Equality operator
+    bool operator==(const Matrix& other) const {
+        if (rows != other.rows || cols != other.cols) {
+            return false;
+        }
+        
+        for (std::size_t i = 0; i < rows; ++i) {
+            for (std::size_t j = 0; j < cols; ++j) {
+                if (!AreEqual(data[i][j], other.data[i][j])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Inequality operator
+    bool operator!=(const Matrix& other) const {
+        return !(*this == other);
+    }
+
+    // Stream output operator
+    friend std::ostream& operator<<(std::ostream& os, const Matrix& matrix) {
+        for (std::size_t i = 0; i < matrix.rows; ++i) {
+            for (std::size_t j = 0; j < matrix.cols; ++j) {
+                os << matrix.data[i][j];
+                if (j < matrix.cols - 1) {
+                    os << " ";
+                }
+            }
+            if (i < matrix.rows - 1) {
+                os << "\n";
+            }
+        }
+        return os;
+    }
 };
 
-// Commutative scalar multiplication
 template<typename T>
 Matrix<T> operator*(const T& scalar, const Matrix<T>& matrix) {
     return matrix * scalar;
