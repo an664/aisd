@@ -23,7 +23,7 @@ TEST(MatrixTest, DefaultConstructorTest) {
     EXPECT_NE(m1, m3);      
 }
 
-// Random constructor test
+// Random constructor test (with value)
 TEST(MatrixTest, RandomConstructorTest) {
     Matrix<double> m1(3, 2, -1.0, 1.0);
     Matrix<double> m2(m1);  
