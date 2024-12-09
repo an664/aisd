@@ -19,21 +19,21 @@ TEST(MatrixTest, DefaultConstructorTest) {
     
     EXPECT_EQ(m1.GetRows(), 2);
     EXPECT_EQ(m1.GetCols(), 3);
-    EXPECT_EQ(m1, m2);      // Должны быть равны
-    EXPECT_NE(m1, m3);      // Не должны быть равны
+    EXPECT_EQ(m1, m2);      
+    EXPECT_NE(m1, m3);      
 }
 
 // Random constructor test
 TEST(MatrixTest, RandomConstructorTest) {
     Matrix<double> m1(3, 2, -1.0, 1.0);
-    Matrix<double> m2(m1);  // Копируем m1
+    Matrix<double> m2(m1);  
     
     EXPECT_EQ(m1.GetRows(), 3);
     EXPECT_EQ(m1.GetCols(), 2);
-    EXPECT_EQ(m1, m2);      // Копия должна быть равна оригиналу
+    EXPECT_EQ(m1, m2);      
     
-    m2(0, 0) += 1.0;       // Меняем элемент
-    EXPECT_NE(m1, m2);      // Теперь матрицы должны быть не равны
+    m2(0, 0) += 1.0;       
+    EXPECT_NE(m1, m2);     
 }
 
 // Copy constructor test
@@ -42,11 +42,11 @@ TEST(MatrixTest, CopyConstructorTest) {
     Matrix<double> m2(m1);
     Matrix<double> m3(2, 2, 3.0);
     
-    EXPECT_EQ(m1, m2);      // Копия должна быть равна оригиналу
-    EXPECT_EQ(m1, m3);      // Матрицы с одинаковыми значениями должны быть равны
+    EXPECT_EQ(m1, m2);      
+    EXPECT_EQ(m1, m3);      
     
     m2(0, 0) = 5.0;
-    EXPECT_NE(m1, m2);      // После изменения не должны быть равны
+    EXPECT_NE(m1, m2);     
 }
 
 // Complex number constructor test
@@ -56,8 +56,8 @@ TEST(MatrixTest, ComplexConstructorTest) {
     Matrix<Complex> m2(2, 2, Complex(1.0, 2.0));
     Matrix<Complex> m3(2, 2, Complex(1.0, 2.1));
     
-    EXPECT_EQ(m1, m2);      // Одинаковые комплексные матрицы
-    EXPECT_NE(m1, m3);      // Разные комплексные матрицы
+    EXPECT_EQ(m1, m2);      
+    EXPECT_NE(m1, m3);      
 }
 
 // Random complex constructor test
@@ -67,10 +67,10 @@ TEST(MatrixTest, RandomComplexConstructorTest) {
     Matrix<Complex> m1(2, 2, min, max);
     Matrix<Complex> m2(m1);
     
-    EXPECT_EQ(m1, m2);      // Копия должна быть равна оригиналу
+    EXPECT_EQ(m1, m2);      
     
     m2(0, 0) = Complex(2.0, 2.0);
-    EXPECT_NE(m1, m2);      // После изменения не должны быть равны
+    EXPECT_NE(m1, m2);      
 }
 
 // Invalid size constructor test
@@ -249,11 +249,11 @@ TEST(MatrixTest, InequalityTest) {
 // Floating point comparison precision test
 TEST(MatrixTest, FloatingPointComparisonTest) {
     Matrix<double> m1(2, 2, 1.0);
-    Matrix<double> m2(2, 2, 1.0 + 1e-11);  // Разница меньше EPSILON
-    Matrix<double> m3(2, 2, 1.0 + 1e-9);   // Разница больше EPSILON
+    Matrix<double> m2(2, 2, 1.0 + 1e-11);  
+    Matrix<double> m3(2, 2, 1.0 + 1e-9);   
     
-    EXPECT_EQ(m1, m2);      // Должны считаться равными из-за погрешности
-    EXPECT_NE(m1, m3);      // Не должны считаться равными
+    EXPECT_EQ(m1, m2);      
+    EXPECT_NE(m1, m3);      
 }
 
 // Complex number equality test
@@ -282,7 +282,6 @@ TEST(MatrixTest, ComplexStreamOutputTest) {
     Matrix<Complex> m(2, 2, Complex(1.0, 2.0));
     std::stringstream ss;
     ss << m;
-    // Note: exact format might need adjustment based on complex number output format
     EXPECT_FALSE(ss.str().empty());
 }
 
